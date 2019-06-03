@@ -57,11 +57,11 @@ bool COutportStorage::UpCtrl()
 	CString id;
 	goodsId->GetWindowText(id);
 	CString name;
-	goodsCount->GetWindowText(name);
+	handleName->GetWindowText(name);
 	CString uname;
-	goodsCount->GetWindowText(uname);
+	useName->GetWindowText(uname);
 	CString count;
-	handleName->GetWindowText(count);
+	goodsCount->GetWindowText(count);
 	if (id.IsEmpty() || name.IsEmpty() || count.IsEmpty() || uname.IsEmpty())
 		return false;
 	std::string tempGoodsGuid = GoodsInfo::instance()->getGoodsGuids(Fly_string::w2c(id));

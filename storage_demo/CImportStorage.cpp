@@ -55,9 +55,9 @@ bool CImportStorage::UpCtrl()
 	CString id;
 	goodsId->GetWindowText(id);
 	CString name;
-	goodsCount->GetWindowText(name);
+	handleName->GetWindowText(name);
 	CString count;
-	handleName->GetWindowText(count);
+	goodsCount->GetWindowText(count);
 	if (id.IsEmpty() || name.IsEmpty() || count.IsEmpty())
 		return false;
 	std::string tempGoodsGuid = GoodsInfo::instance()->getGoodsGuids(Fly_string::w2c(id));
