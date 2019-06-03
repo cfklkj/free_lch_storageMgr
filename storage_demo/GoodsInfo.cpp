@@ -83,6 +83,15 @@ bool GoodsInfo::getGoodsInfo(std::string goodsGuid, GOODSINFO *out_info)
 	return false; 
 }
 
+void GoodsInfo::upGoodsCount(std::string goodsGuid, int offset)
+{
+	auto it = m_mapGoods.find(goodsGuid);
+	if (it != m_mapGoods.end())
+	{
+		m_mapGoods[goodsGuid].count += offset;
+	}
+}
+
 bool GoodsInfo::findGoods(GOODSINFO info)
 {
 	for (auto it : m_mapGoods)

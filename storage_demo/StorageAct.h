@@ -1,19 +1,18 @@
 #pragma once
 
 struct IMPORTINFO {
-	std::string id; //物品序号
+	std::string goodsGuid; //物品唯一标识
 	int count;  //入库数量
 	std::string data;  //入库日期
 	std::string handleName;  //登记人
 };
 struct  OUTPORTINFO
 {
-	std::string id;  //物品序号
+	std::string goodsGuid;  //物品唯一标识
 	int count;  //入库数量
 	std::string data;  //入库日期
 	std::string useName;  //领用人
-	std::string handleName; //登记人
-
+	std::string handleName; //登记人 
 };
 class StorageAct
 {

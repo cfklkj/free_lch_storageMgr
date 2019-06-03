@@ -22,24 +22,26 @@ StorageAct * StorageAct::instance()
  
 bool StorageAct::importGoodsToStrorage(IMPORTINFO info)
 { 
-	if (GoodsInfo::instance()->getGoodsInfo(info.id, NULL))
+	if (GoodsInfo::instance()->getGoodsInfo(info.goodsGuid, NULL))
 	{ 
 		ErroInfo::instance()->setErroInfo("未找到物品id");
 		return false;
 	}
 	info.data = Fly_Time::TIME::GetDateString();
+	GoodsInfo::instance()->upGoodsCount(info.goodsGuid, info.count);
 	addToImportStrorageFile(info);
 	return false;
 }
 
 bool StorageAct::outputGoodsFromStrorage(OUTPORTINFO info)
 {
-	if (GoodsInfo::instance()->getGoodsInfo(info.id, NULL))
+	if (GoodsInfo::instance()->getGoodsInfo(info.goodsGuid, NULL))
 	{
 		ErroInfo::instance()->setErroInfo("未找到物品id");
 		return false;
 	}
 	info.data = Fly_Time::TIME::GetDateString();
+	GoodsInfo::instance()->upGoodsCount(info.goodsGuid, -info.count);
 	addToOutportStrorageFile(info);
 	return false;
 }
@@ -53,7 +55,7 @@ bool StorageAct::addToImportStrorageFile(IMPORTINFO info)
 	fopen_s(&stream, g_storageImportFilePath.c_str(), "w+");
 	if (stream)
 	{
-		fprintf(stream, "{%s,%d,%s,%s\n", info.id, info.count, info.data, info.handleName);
+		fprintf(stream, "{%s,%d,%s,%s\n", info.goodsGuid, info.count, info.data, info.handleName);
 		fclose(stream);
 	}
 	return false;
@@ -68,7 +70,7 @@ bool StorageAct::addToOutportStrorageFile(OUTPORTINFO info)
 	fopen_s(&stream, g_storageOutportFilePath.c_str(), "w+");
 	if (stream)
 	{
-		fprintf(stream, "{%s,%d,%s,%s,%s\n", info.id, info.count, info.data, info.useName, info.handleName);
+		fprintf(stream, "{%s,%d,%s,%s,%s\n", info.goodsGuid, info.count, info.data, info.useName, info.handleName);
 		fclose(stream);
 	}
 	return false;
@@ -85,10 +87,11 @@ void StorageAct::initVecImport()
 		while (fgets(buff, 255, stream) != NULL);
 		{
 			IMPORTINFO info;
-			info.id = Fly_string::GetSubStr(buff, ",", 1);
+			info.goodsGuid = Fly_string::GetSubStr(buff, ",", 1);
 			info.count = atoi(Fly_string::GetSubStr(buff, ",", 2).c_str());
 			info.data = Fly_string::GetSubStr(buff, ",", 3);
 			info.handleName = Fly_string::GetSubStr(buff, ",", 4);
+			GoodsInfo::instance()->upGoodsCount(info.goodsGuid, info.count);
 			m_vecImport.push_back(info);
 		}
 		fclose(stream);
@@ -107,11 +110,12 @@ void StorageAct::initVecOutport()
 		while (fgets(buff, 255, stream) != NULL);
 		{
 			OUTPORTINFO info;
-			info.id = Fly_string::GetSubStr(buff, ",", 1);
+			info.goodsGuid = Fly_string::GetSubStr(buff, ",", 1);
 			info.count = atoi(Fly_string::GetSubStr(buff, ",", 2).c_str());
 			info.data = Fly_string::GetSubStr(buff, ",", 3);
 			info.useName = Fly_string::GetSubStr(buff, ",", 4);
 			info.handleName = Fly_string::GetSubStr(buff, ",", 5);
+			GoodsInfo::instance()->upGoodsCount(info.goodsGuid, -info.count);
 			m_vecOutport.push_back(info);
 		}
 		fclose(stream);
