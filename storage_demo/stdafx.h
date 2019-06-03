@@ -45,7 +45,15 @@
 #include "..\lib\include\Fly_file.h"
 #include "..\lib\include\Fly_Time.h"
 #include "..\lib\include\Fly_sys.h"
-
+#include <afxcontrolbars.h>
+#include <afxcontrolbars.h>
+#include <afxcontrolbars.h>
+#include <afxcontrolbars.h>
+#ifdef _DEBUG
+#pragma comment(lib, "../lib/FlyLibs")
+#else
+#pragma comment(lib, "../lib/FlyLibsR")
+#endif
 
 
 #ifdef _UNICODE

@@ -8,6 +8,8 @@ StorageAct::StorageAct()
 	Fly_file::Dir::createDirs(path);
 	g_storageImportFilePath = path + "\\importStorage.data";
 	g_storageOutportFilePath = path + "\\outportStorage.data";
+	initVecImport();
+	initVecOutport();
 }
 
 
@@ -22,7 +24,7 @@ StorageAct * StorageAct::instance()
  
 bool StorageAct::importGoodsToStrorage(IMPORTINFO info)
 { 
-	if (GoodsInfo::instance()->getGoodsInfo(info.goodsGuid, NULL))
+	if (!GoodsInfo::instance()->getGoodsInfo(info.goodsGuid, NULL))
 	{ 
 		ErroInfo::instance()->setErroInfo("未找到物品id");
 		return false;
@@ -30,12 +32,12 @@ bool StorageAct::importGoodsToStrorage(IMPORTINFO info)
 	info.data = Fly_Time::TIME::GetDateString();
 	GoodsInfo::instance()->upGoodsCount(info.goodsGuid, info.count);
 	addToImportStrorageFile(info);
-	return false;
+	return true;
 }
 
 bool StorageAct::outputGoodsFromStrorage(OUTPORTINFO info)
 {
-	if (GoodsInfo::instance()->getGoodsInfo(info.goodsGuid, NULL))
+	if (!GoodsInfo::instance()->getGoodsInfo(info.goodsGuid, NULL))
 	{
 		ErroInfo::instance()->setErroInfo("未找到物品id");
 		return false;
@@ -52,10 +54,10 @@ bool StorageAct::addToImportStrorageFile(IMPORTINFO info)
 	m_vecImport.push_back(info);
 
 	FILE *stream;
-	fopen_s(&stream, g_storageImportFilePath.c_str(), "w+");
+	fopen_s(&stream, g_storageImportFilePath.c_str(), "a+");
 	if (stream)
 	{
-		fprintf(stream, "{%s,%d,%s,%s\n", info.goodsGuid, info.count, info.data, info.handleName);
+		fprintf(stream, "%s,%d,%s,%s\n", info.goodsGuid.c_str(), info.count, info.data.c_str(), info.handleName.c_str());
 		fclose(stream);
 	}
 	return false;
@@ -67,10 +69,10 @@ bool StorageAct::addToOutportStrorageFile(OUTPORTINFO info)
 	m_vecOutport.push_back(info);
 
 	FILE *stream;
-	fopen_s(&stream, g_storageOutportFilePath.c_str(), "w+");
+	fopen_s(&stream, g_storageOutportFilePath.c_str(), "a+");
 	if (stream)
 	{
-		fprintf(stream, "{%s,%d,%s,%s,%s\n", info.goodsGuid, info.count, info.data, info.useName, info.handleName);
+		fprintf(stream, "%s,%d,%s,%s,%s\n", info.goodsGuid.c_str(), info.count, info.data.c_str(), info.useName.c_str(), info.handleName.c_str());
 		fclose(stream);
 	}
 	return false;
@@ -84,7 +86,7 @@ void StorageAct::initVecImport()
 	if (stream)
 	{
 		char buff[256];
-		while (fgets(buff, 255, stream) != NULL);
+		while (fgets(buff, 255, stream) != NULL)
 		{
 			IMPORTINFO info;
 			info.goodsGuid = Fly_string::GetSubStr(buff, ",", 1);
@@ -107,7 +109,7 @@ void StorageAct::initVecOutport()
 	if (stream)
 	{
 		char buff[256];
-		while (fgets(buff, 255, stream) != NULL);
+		while (fgets(buff, 255, stream) != NULL)
 		{
 			OUTPORTINFO info;
 			info.goodsGuid = Fly_string::GetSubStr(buff, ",", 1);

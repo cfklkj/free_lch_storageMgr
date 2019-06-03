@@ -39,6 +39,15 @@
     <ClInclude Include="StorageAct.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CImportStorage.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CGoodsInfo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="COutportStorage.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="storage_demo.cpp">
@@ -57,6 +66,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="StorageAct.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CImportStorage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CGoodsInfo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="COutportStorage.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

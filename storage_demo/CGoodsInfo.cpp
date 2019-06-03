@@ -54,18 +54,20 @@ bool CGoodsInfo::UpCtrl()
 	if (id.IsEmpty() || name.IsEmpty() || type.IsEmpty())
 		return false;
 	info.id = Fly_string::w2c(id);
+	if (info.id.length() < 3)
+		return false;
 	info.name = Fly_string::w2c(name);
-	info.type = atoi(Fly_string::format("%d", Fly_string::w2c(type).c_str()).c_str());
+	std::string typeStr = Fly_string::w2c(type).c_str();
+	info.type = atoi(typeStr.c_str());
 	std::string goodsGuid = getGoodsGuid();
 	if (goodsGuid.length() < 3)
 	{
-		GoodsInfo::instance()->addGoodsInfo(info);
+		return GoodsInfo::instance()->addGoodsInfo(info);
 	}
 	else
 	{
-		GoodsInfo::instance()->altGoodsInfo(info);
-	}
-	return true;
+		return GoodsInfo::instance()->altGoodsInfo(info);
+	} 
 }
 
 void CGoodsInfo::DoDataExchange(CDataExchange* pDX)
@@ -87,7 +89,7 @@ void CGoodsInfo::OnBnClickedOk()
 	// TODO: 在此添加控件通知处理程序代码
 	if (!UpCtrl())
 	{
-		MessageBox(L"输入信息有误，请重试", L"提示");
+		MessageBox(L"输入信息有误或已存在物品序号，请重试", L"提示");
 		return;
 	}
 	CDialogEx::OnOK();
