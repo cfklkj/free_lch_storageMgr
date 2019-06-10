@@ -35,6 +35,8 @@ namespace Fly_string {
 	std::string pFindSub(const char* Fullstr, const char* subStr);
 	//查找字符串返回指针 --返回查找到的字符串之前的内容
 	std::string pFindSub_retHead(const char* Fullstr, const char* subStr);
+
+	std::string delChar(const char* pzStr, const char* Chrs, int where);
 	//拷贝字符串
 	char* strMalloc(const char* _source);
 	//释放

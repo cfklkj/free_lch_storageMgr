@@ -35,6 +35,17 @@ bool StorageAct::importGoodsToStrorage(IMPORTINFO info)
 	return true;
 }
 
+std::vector<IMPORTINFO> StorageAct::getSelectImportGoodsToStrorageInfo(IMPORTINFO info)
+{
+	std::vector<IMPORTINFO> rstInfo;
+	for (auto it : m_vecImport)
+	{
+		if (isSelectImport(it, info))
+			rstInfo.push_back(it);
+	}
+	return rstInfo;
+}
+
 bool StorageAct::outputGoodsFromStrorage(OUTPORTINFO info)
 {
 	if (!GoodsInfo::instance()->getGoodsInfo(info.goodsGuid, NULL))
@@ -46,6 +57,17 @@ bool StorageAct::outputGoodsFromStrorage(OUTPORTINFO info)
 	GoodsInfo::instance()->upGoodsCount(info.goodsGuid, -info.count);
 	addToOutportStrorageFile(info);
 	return false;
+}
+
+std::vector<OUTPORTINFO> StorageAct::getSelectOutputGoodsFromStrorageInfo(OUTPORTINFO info)
+{
+	std::vector<OUTPORTINFO> rstInfo;
+	for (auto it : m_vecOutport)
+	{
+		if (isSelectOutport(it, info))
+			rstInfo.push_back(it);
+	}
+	return rstInfo;
 }
  
 
@@ -93,6 +115,7 @@ void StorageAct::initVecImport()
 			info.count = atoi(Fly_string::GetSubStr(buff, ",", 2).c_str());
 			info.data = Fly_string::GetSubStr(buff, ",", 3);
 			info.handleName = Fly_string::GetSubStr(buff, ",", 4);
+			info.handleName = Fly_string::delChar(info.handleName.c_str(), "\r\n", 0);
 			GoodsInfo::instance()->upGoodsCount(info.goodsGuid, info.count);
 			m_vecImport.push_back(info);
 		}
@@ -117,12 +140,67 @@ void StorageAct::initVecOutport()
 			info.data = Fly_string::GetSubStr(buff, ",", 3);
 			info.useName = Fly_string::GetSubStr(buff, ",", 4);
 			info.handleName = Fly_string::GetSubStr(buff, ",", 5);
+			info.handleName = Fly_string::delChar(info.handleName.c_str(), "\r\n", 0);
 			GoodsInfo::instance()->upGoodsCount(info.goodsGuid, -info.count);
 			m_vecOutport.push_back(info);
 		}
 		fclose(stream);
 	}
 
+}
+
+bool StorageAct::isSelectImport(IMPORTINFO it, IMPORTINFO info)
+{
+	bool isSelect = false;
+	if (info.data.length() > 0)
+	{
+		isSelect = it.data == info.data;
+		if (!isSelect)
+			return false;
+	}
+	if (info.goodsGuid.length() > 0 )
+	{
+		isSelect = it.goodsGuid == info.goodsGuid;
+		if (!isSelect)
+			return false;
+	}
+	if (info.handleName.length() > 0 )
+	{
+		isSelect = it.handleName == info.handleName;
+		if (!isSelect)
+			return false;
+	} 
+	return isSelect;
+}
+
+bool StorageAct::isSelectOutport(OUTPORTINFO it, OUTPORTINFO info)
+{
+	bool isSelect = false;
+	if (info.data.length() > 0)
+	{
+		isSelect = it.data == info.data;
+		if (!isSelect)
+			return false;
+	}
+	if (info.goodsGuid.length() > 0)
+	{
+		isSelect = it.goodsGuid == info.goodsGuid;
+		if (!isSelect)
+			return false;
+	}
+	if (info.handleName.length() > 0)
+	{
+		isSelect = it.handleName == info.handleName;
+		if (!isSelect)
+			return false;
+	}
+	if (info.useName.length() > 0)
+	{
+		isSelect = it.useName == info.useName;
+		if (!isSelect)
+			return false;
+	}
+	return true;
 }
 
  

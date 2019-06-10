@@ -34,9 +34,8 @@ void CGoodsInfo::InitCtl()
 	CEdit* goodsType = (CEdit*)this->GetDlgItem(IDC_goodsType);
 
 	goodsId->SetWindowText((LPCTSTR)info.id.c_str());
-	goodsName->SetWindowText((LPCTSTR)info.name.c_str());
-	std::string goodsTypeStr = Fly_string::format("%d", info.type);
-	goodsType->SetWindowText((LPCTSTR)goodsTypeStr.c_str());
+	goodsName->SetWindowText((LPCTSTR)info.name.c_str()); 
+	goodsType->SetWindowText((LPCTSTR)info.type.c_str());
 }
 
 bool CGoodsInfo::UpCtrl()
@@ -57,8 +56,7 @@ bool CGoodsInfo::UpCtrl()
 	if (info.id.length() < 3)
 		return false;
 	info.name = Fly_string::w2c(name);
-	std::string typeStr = Fly_string::w2c(type).c_str();
-	info.type = atoi(typeStr.c_str());
+	info.type = Fly_string::w2c(type).c_str(); 
 	std::string goodsGuid = getGoodsGuid();
 	if (goodsGuid.length() < 3)
 	{

@@ -3,6 +3,11 @@
 //
 
 #pragma once
+struct SELECTINFO {
+	GOODSINFO goodsInfo;
+	IMPORTINFO importInfo;
+	OUTPORTINFO outportInfo;
+};
 
 
 // CstoragedemoDlg 对话框
@@ -24,16 +29,19 @@ private:
 	void addInfo();
 	void altInfo();
 	void delInfo();
+	void selectInfo();
 private:
 	void initTab();
-	void setGoodsInfo();
-	void setImportInfo();
-	void setOutportInfo();
+	void setTabInfo(); 
+	void selectTabInfo(); 
 
+	bool setSelectTabInfo(CString selectStr);
+	SELECTINFO getSelectTabInfo();
 private:
 	void initList();
 	void setListHead(int tabSel);
 	void setListBody(int tabSel);
+	void setSelectListBody(int tabSel);
 	bool addGoodsInfoToListBody(int row, std::string goodsGuid); 
 	bool addImportInfoToListBody(int row, IMPORTINFO info);
 	bool addOutportInfoToListBody(int row, OUTPORTINFO info);
@@ -41,7 +49,8 @@ private:
 	void setListSel(int cur) { m_listSel = cur; };
 	int getListSel() { return m_listSel; }; 
 private:
-	int m_listSel = -1; 
+	int m_listSel = -1;
+	SELECTINFO m_select;
 // 实现
 protected:
 	HICON m_hIcon;
@@ -60,4 +69,5 @@ public:
 	void PopMenu(int cursel, int row);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	
+	afx_msg void OnBnClickedSelect();
 };

@@ -26,9 +26,11 @@ public:
 	//Èë¿â
 	bool importGoodsToStrorage(IMPORTINFO info);
 	std::vector<IMPORTINFO> getImportGoodsToStrorageInfo() { return m_vecImport; };
+	std::vector<IMPORTINFO> getSelectImportGoodsToStrorageInfo(IMPORTINFO info);
 	//³ö¿â
 	bool outputGoodsFromStrorage(OUTPORTINFO info);
 	std::vector<OUTPORTINFO>  getOutputGoodsFromStrorageInfo() { return m_vecOutport; };
+	std::vector<OUTPORTINFO> getSelectOutputGoodsFromStrorageInfo(OUTPORTINFO info);
 	 
 
 private:
@@ -41,6 +43,9 @@ private:
 	bool addToOutportStrorageFile(OUTPORTINFO info);
 	void initVecImport();
 	void initVecOutport();
+	//select
+	bool isSelectImport(IMPORTINFO it, IMPORTINFO info);
+	bool isSelectOutport(OUTPORTINFO it, OUTPORTINFO info);
 	
 };
 

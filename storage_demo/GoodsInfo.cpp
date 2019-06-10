@@ -68,6 +68,19 @@ std::vector<std::string> GoodsInfo::getGoodsGuids()
 	return info;
 }
 
+std::vector<std::string> GoodsInfo::getSelectGoodsGuids(GOODSINFO selectInfo)
+{
+	std::vector<std::string> info;
+	for (auto it : m_mapGoods)
+	{
+		if (isSelectGoods(it.second, selectInfo))
+		{
+			info.push_back(it.first);
+		}
+	}
+	return info;
+}
+
 std::string GoodsInfo::getGoodsGuids(std::string goodsId)
 {
 	for (auto it : m_mapGoods)
@@ -121,7 +134,7 @@ bool GoodsInfo::addToGoodsFile(GOODSINFO info)
 	fopen_s(&stream, g_goodsFilePath.c_str(), "a+"); 
 	if (stream)
 	{ 
-		fprintf(stream, "%s,%s,%d,%s\n", info.guid.c_str(), info.id.c_str(), info.type, info.name.c_str());
+		fprintf(stream, "%s,%s,%s,%s\n", info.guid.c_str(), info.id.c_str(), info.type.c_str(), info.name.c_str());
 		fclose(stream);
 	}
 	return false;
@@ -137,7 +150,7 @@ bool GoodsInfo::altToGoodsFile()
 		{
 			if (it.second.guid.length() < 3)
 				continue;
-			fprintf(stream, "%s,%s,%d,%s\n", it.second.guid.c_str(), it.second.id.c_str(), it.second.type, it.second.name.c_str());
+			fprintf(stream, "%s,%s,%s,%s\n", it.second.guid.c_str(), it.second.id.c_str(), it.second.type.c_str(), it.second.name.c_str());
 		}
 		fclose(stream);
 	}
@@ -156,13 +169,44 @@ void GoodsInfo::initMapGoods()
 			GOODSINFO info;
 			info.guid = Fly_string::GetSubStr(buff, ",", 1);
 			info.id = Fly_string::GetSubStr(buff, ",", 2);
-			info.type = atoi(Fly_string::GetSubStr(buff, ",", 3).c_str());
-			info.name = Fly_string::GetSubStr(buff, ",", 4);
+			info.type = Fly_string::GetSubStr(buff, ",", 3);
+			info.name = "\r\n" + Fly_string::GetSubStr(buff, ",", 4);
 			if (info.guid.length() < 3)
 				continue;
+			info.name = Fly_string::delChar(info.name.c_str(), "\r\n", 0);
 			m_mapGoods[info.guid] = info;
 		} 
 		fclose(stream); 
 	}
+}
+
+bool GoodsInfo::isSelectGoods(GOODSINFO itInfo, GOODSINFO selectInfo)
+{ 
+	bool isSelect = false;
+	if (selectInfo.guid.length() > 0 )
+	{ 
+		isSelect = selectInfo.guid == itInfo.guid;
+		if (!isSelect)
+			return false;
+	}
+	if (selectInfo.id.length() > 0)
+	{ 
+		isSelect = selectInfo.id == itInfo.id;
+		if (!isSelect)
+			return false;
+	}
+	if (selectInfo.name.length() > 0)
+	{ 
+		isSelect = selectInfo.name == itInfo.name;
+		if (!isSelect)
+			return false;
+	}
+	if (selectInfo.type.length() > 0)
+	{ 
+		isSelect = selectInfo.type == itInfo.type;
+		if (!isSelect)
+			return false;
+	}
+	return isSelect;
 }
  

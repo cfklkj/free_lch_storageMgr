@@ -40,7 +40,7 @@ void CstoragedemoDlg::addInfo()
 		CGoodsInfo dlg;
 		if (dlg.DoModal() == IDOK)
 		{
-			setGoodsInfo();
+			setTabInfo();
 		}
 		return;
 	}
@@ -49,7 +49,7 @@ void CstoragedemoDlg::addInfo()
 		CImportStorage dlg;
 		if (dlg.DoModal() == IDOK)
 		{
-			setImportInfo();
+			setTabInfo();
 		}
 		return;
 	}
@@ -58,7 +58,7 @@ void CstoragedemoDlg::addInfo()
 		COutportStorage dlg;
 		if (dlg.DoModal() == IDOK)
 		{
-			setOutportInfo();
+			setTabInfo();
 		}
 		return;
 	}
@@ -82,7 +82,7 @@ void CstoragedemoDlg::altInfo()
 				int col = 0; 
 				m_list.InsertItem(row, Fly_string::c2w(info.name.c_str()).c_str());
 				m_list.SetItemText(row, col++, Fly_string::c2w(info.id.c_str()).c_str());
-				m_list.SetItemText(row, col++, Fly_string::c2w(Fly_string::format("%d", info.type).c_str()).c_str());
+				m_list.SetItemText(row, col++, Fly_string::c2w(info.type.c_str()).c_str());
 			} 
 		}
 		return;
@@ -104,36 +104,161 @@ void CstoragedemoDlg::delInfo()
 	}
 }
 
+void CstoragedemoDlg::selectInfo()
+{
+
+	CEdit* select = (CEdit*)this->GetDlgItem(IDC_Where);
+	CString whereStr;
+	select->GetWindowText(whereStr); 
+	if (setSelectTabInfo(whereStr))
+	{
+		selectTabInfo();
+	}
+	else
+	{
+		setTabInfo();
+	} 
+}
+
 void CstoragedemoDlg::initTab()
 {
 	//为Tab Control增加两个页面
 	m_tab.InsertItem(0, _T("物品信息"));
 	m_tab.InsertItem(1, _T("入库信息"));
 	m_tab.InsertItem(2, _T("出库信息")); 
-	setGoodsInfo();
+	setTabInfo();
 }
 
-void CstoragedemoDlg::setGoodsInfo()
+void CstoragedemoDlg::setTabInfo()
 {
 	int tabSel = m_tab.GetCurSel();
 	setListHead(tabSel);
 	setListBody(tabSel);
 }
-
-void CstoragedemoDlg::setImportInfo()
+ 
+void CstoragedemoDlg::selectTabInfo()
 {
 	int tabSel = m_tab.GetCurSel();
 	setListHead(tabSel);
-	setListBody(tabSel);
+	setSelectListBody(tabSel);
 }
 
-void CstoragedemoDlg::setOutportInfo()
+bool CstoragedemoDlg::setSelectTabInfo(CString selectStr)
 {
+	if (selectStr.IsEmpty())
+		return false;
+
+	std::string tmpRst= Fly_string::w2c(selectStr).c_str();
+	const char* fullStr = tmpRst.c_str();
 	int tabSel = m_tab.GetCurSel();
-	setListHead(tabSel);
-	setListBody(tabSel);
+	bool isSelect = false;
+	if (tabSel == 0)
+	{
+
+		const char* goodsInfo[] = { "物品序号=", "物品名称=", "物品类型=",  "余量=" };
+		int i = 0;
+		GOODSINFO tmpGoodsInfo;
+		for (auto it : goodsInfo)
+		{
+			i++;
+			if (i == 1 && tmpGoodsInfo.id.length() < 3 && Fly_string::FindSub(fullStr, it))
+			{
+				tmpGoodsInfo.id = Fly_string::pFindSub(fullStr, it);
+				tmpGoodsInfo.id = Fly_string::GetSubStr(tmpGoodsInfo.id.c_str(), ",", 1);
+				isSelect = true;
+			}
+			if (i == 2 && tmpGoodsInfo.name.length() < 3 && Fly_string::FindSub(fullStr, it))
+			{
+				tmpGoodsInfo.name = Fly_string::pFindSub(fullStr, it);
+				tmpGoodsInfo.name = Fly_string::GetSubStr(tmpGoodsInfo.name.c_str(), ",", 1);
+				isSelect = true;
+			}
+			if (i == 3 && tmpGoodsInfo.type.length() < 3 && Fly_string::FindSub(fullStr, it))
+			{
+				tmpGoodsInfo.type = Fly_string::pFindSub(fullStr, it);
+				tmpGoodsInfo.type = Fly_string::GetSubStr(tmpGoodsInfo.type.c_str(), ",", 1);
+				isSelect = true;
+			} 
+		}
+		m_select.goodsInfo = tmpGoodsInfo;
+		return isSelect;
+	}
+	if (tabSel == 1)
+	{		 
+		const char* goodsInfo[] = { "入库日期=", "物品序号=", "登记人=" };
+		int i = 0;
+		IMPORTINFO tmpImportInfo;
+		for (auto it : goodsInfo)
+		{
+			i++; 
+			if (i == 1 && tmpImportInfo.data.length() < 3 && Fly_string::FindSub(fullStr, it))
+			{
+				tmpImportInfo.data = Fly_string::pFindSub(fullStr, it);
+				tmpImportInfo.data = Fly_string::GetSubStr(tmpImportInfo.data.c_str(), ",", 1);
+				isSelect = true;
+			}
+			if (i == 2 && tmpImportInfo.goodsGuid.length() < 3 && Fly_string::FindSub(fullStr, it))
+			{
+				std::string id = Fly_string::pFindSub(fullStr, it);
+				id = Fly_string::GetSubStr(id.c_str(), ",", 1);
+				tmpImportInfo.goodsGuid  = GoodsInfo::instance()->getGoodsGuids(id);
+				isSelect = true;
+			}
+			if (i == 3 && tmpImportInfo.handleName.length() < 3 && Fly_string::FindSub(fullStr, it))
+			{
+				tmpImportInfo.handleName = Fly_string::pFindSub(fullStr, it);
+				tmpImportInfo.handleName = Fly_string::GetSubStr(tmpImportInfo.handleName.c_str(), ",", 1);
+				isSelect = true;
+			} 
+		}
+		m_select.importInfo = tmpImportInfo;
+		return isSelect;
+	}
+	if (tabSel == 2)
+	{
+		 
+		const char* goodsInfo[] = { "出库日期=", "物品序号=", "领用人=", "登记人=" };
+		int i = 0;
+		OUTPORTINFO outPortInfo;
+		for (auto it : goodsInfo)
+		{
+			i++;
+			if (i == 1 && outPortInfo.data.length() < 3 && Fly_string::FindSub(fullStr, it))
+			{
+				outPortInfo.data = Fly_string::pFindSub(fullStr, it);
+				outPortInfo.data = Fly_string::GetSubStr(outPortInfo.data.c_str(), ",", 1);
+				isSelect = true;
+			}
+			if (i == 2 && outPortInfo.goodsGuid.length() < 3 && Fly_string::FindSub(fullStr, it))
+			{
+				std::string id = Fly_string::pFindSub(fullStr, it);
+				id = Fly_string::GetSubStr(id.c_str(), ",", 1);
+				outPortInfo.goodsGuid = GoodsInfo::instance()->getGoodsGuids(id); 
+				isSelect = true;
+			}
+			if (i == 3 && outPortInfo.useName.length() < 3 && Fly_string::FindSub(fullStr, it))
+			{
+				outPortInfo.useName = Fly_string::pFindSub(fullStr, it);
+				outPortInfo.useName = Fly_string::GetSubStr(outPortInfo.useName.c_str(), ",", 1);
+				isSelect = true;
+			}
+			if (i == 4 && outPortInfo.handleName.length() < 3 && Fly_string::FindSub(fullStr, it))
+			{
+				outPortInfo.handleName = Fly_string::pFindSub(fullStr, it);
+				outPortInfo.handleName = Fly_string::GetSubStr(outPortInfo.handleName.c_str(), ",", 1);
+				isSelect = true;
+			}
+		}
+		m_select.outportInfo = outPortInfo;
+		return isSelect;
+	}
 }
 
+SELECTINFO CstoragedemoDlg::getSelectTabInfo()
+{
+	return m_select;
+}
+ 
 void CstoragedemoDlg::initList()
 {
 	// 为列表视图控件添加全行选中和栅格风格    
@@ -225,6 +350,44 @@ void CstoragedemoDlg::setListBody(int tabSel)
 	}
 }
 
+void CstoragedemoDlg::setSelectListBody(int tabSel)
+{
+	auto it = getSelectTabInfo();
+	if (tabSel == 0)
+	{
+		auto goodsGuids = GoodsInfo::instance()->getSelectGoodsGuids(it.goodsInfo);
+		int row = m_list.GetItemCount();
+		for (auto it : goodsGuids)
+		{
+			if (addGoodsInfoToListBody(row, it))
+				row++;
+		}
+		return;
+	}
+	if (tabSel == 1)
+	{
+		auto info = StorageAct::instance()->getSelectImportGoodsToStrorageInfo(it.importInfo);
+		int row = m_list.GetItemCount();
+		for (auto it : info)
+		{
+			if (addImportInfoToListBody(row, it))
+				row++;
+		}
+		return;
+	}
+	if (tabSel == 2)
+	{
+		auto inf = StorageAct::instance()->getSelectOutputGoodsFromStrorageInfo(it.outportInfo);
+		int row = m_list.GetItemCount();
+		for (auto it : inf)
+		{
+			if (addOutportInfoToListBody(row, it))
+				row++;
+		}
+		return;
+	}
+}
+
 bool CstoragedemoDlg::addGoodsInfoToListBody(int row, std::string goodsGuid)
 {
 	GOODSINFO info;
@@ -236,7 +399,7 @@ bool CstoragedemoDlg::addGoodsInfoToListBody(int row, std::string goodsGuid)
 		m_list.InsertItem(row, Fly_string::c2w(info.id.c_str()).c_str());
 		m_list.SetItemText(row, col, Fly_string::c2w(info.name.c_str()).c_str());
 		col++;
-		m_list.SetItemText(row, col, Fly_string::c2w(Fly_string::format("%d", info.type).c_str()).c_str());
+		m_list.SetItemText(row, col, Fly_string::c2w(info.type.c_str()).c_str());
 		col++;
 		m_list.SetItemText(row, col, Fly_string::c2w(Fly_string::format("%d", info.count).c_str()).c_str());
 		return true;
@@ -288,6 +451,7 @@ BEGIN_MESSAGE_MAP(CstoragedemoDlg, CDialogEx)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CstoragedemoDlg::OnSelchangeTab1)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CstoragedemoDlg::OnLvnItemchangedList1)
 	ON_NOTIFY(NM_RCLICK, IDC_LIST1, &CstoragedemoDlg::OnRclickList1)
+	ON_BN_CLICKED(IDC_Select, &CstoragedemoDlg::OnBnClickedSelect)
 END_MESSAGE_MAP()
 
 
@@ -350,20 +514,7 @@ void CstoragedemoDlg::OnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: 在此添加控件通知处理程序代码
 	*pResult = 0;
-	switch (m_tab.GetCurSel())
-	{
-	case 0:
-		setGoodsInfo();
-		break;
-	case 1:
-		setImportInfo();
-		break;
-	case 2:
-		setOutportInfo();
-		break;
-	default:
-		break;
-	}
+	setTabInfo();
 }
 
 
@@ -434,4 +585,11 @@ BOOL CstoragedemoDlg::PreTranslateMessage(MSG* pMsg)
 		return 1;
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void CstoragedemoDlg::OnBnClickedSelect()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	selectInfo();
 }
