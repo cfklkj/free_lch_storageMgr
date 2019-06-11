@@ -252,6 +252,7 @@ bool CstoragedemoDlg::setSelectTabInfo(CString selectStr)
 		m_select.outportInfo = outPortInfo;
 		return isSelect;
 	}
+	return isSelect;
 }
 
 SELECTINFO CstoragedemoDlg::getSelectTabInfo()
@@ -326,6 +327,7 @@ void CstoragedemoDlg::setListBody(int tabSel)
 		}
 		return;
 	}
+	clearMapNote();
 	if (tabSel == 1)
 	{
 		auto info = StorageAct::instance()->getImportGoodsToStrorageInfo();
@@ -401,7 +403,7 @@ bool CstoragedemoDlg::addGoodsInfoToListBody(int row, std::string goodsGuid)
 		col++;
 		m_list.SetItemText(row, col, Fly_string::c2w(info.type.c_str()).c_str());
 		col++;
-		m_list.SetItemText(row, col, Fly_string::c2w(Fly_string::format("%d", info.count).c_str()).c_str());
+		m_list.SetItemText(row, col, Fly_string::c2w(Fly_string::format("%d", info.count).c_str()).c_str()); 
 		return true;
 	}
 	return false;
@@ -421,6 +423,7 @@ bool CstoragedemoDlg::addImportInfoToListBody(int row, IMPORTINFO info)
 	m_list.SetItemText(row, col, Fly_string::c2w(Fly_string::format("%d", info.count).c_str()).c_str());
 	col++;
 	m_list.SetItemText(row, col, Fly_string::c2w(info.handleName.c_str()).c_str());
+	setMapNote(row, info.note);
 	return true;
 }
 
@@ -440,7 +443,22 @@ bool CstoragedemoDlg::addOutportInfoToListBody(int row, OUTPORTINFO info)
 	m_list.SetItemText(row, col, Fly_string::c2w(info.useName.c_str()).c_str());
 	col++;
 	m_list.SetItemText(row, col, Fly_string::c2w(info.handleName.c_str()).c_str());
+	setMapNote(row, info.note);
 	return true;
+}
+
+void CstoragedemoDlg::setMapNote(int index, std::string note)
+{
+	if(note.length() > 0)
+		m_mapNote[index] = note;
+}
+
+std::string CstoragedemoDlg::getMapNote(int index)
+{
+	auto it = m_mapNote.find(index);
+	if (it != m_mapNote.end())
+		return it->second;
+	return "";
 }
  
  
@@ -452,6 +470,7 @@ BEGIN_MESSAGE_MAP(CstoragedemoDlg, CDialogEx)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CstoragedemoDlg::OnLvnItemchangedList1)
 	ON_NOTIFY(NM_RCLICK, IDC_LIST1, &CstoragedemoDlg::OnRclickList1)
 	ON_BN_CLICKED(IDC_Select, &CstoragedemoDlg::OnBnClickedSelect)
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CstoragedemoDlg::OnDblclkList1)
 END_MESSAGE_MAP()
 
 
@@ -592,4 +611,21 @@ void CstoragedemoDlg::OnBnClickedSelect()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	selectInfo();
+}
+
+
+void CstoragedemoDlg::OnDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	// TODO: 在此添加控件通知处理程序代码
+	*pResult = 0;
+	int tabSel = m_tab.GetCurSel();
+	int sel = pNMItemActivate->iItem;    //item (行)
+	if (tabSel < 1 || sel < 0)
+		return;  
+	std::string note = getMapNote(sel);
+	if (note.length() > 0)
+	{
+		MessageBox(Fly_string::C2W(note.c_str()).c_str(), L"备注:");
+	} 
 }

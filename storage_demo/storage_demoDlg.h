@@ -48,9 +48,13 @@ private:
 	 
 	void setListSel(int cur) { m_listSel = cur; };
 	int getListSel() { return m_listSel; }; 
+	void clearMapNote() { m_mapNote.clear(); };
+	void setMapNote(int, std::string);
+	std::string getMapNote(int);
 private:
 	int m_listSel = -1;
-	SELECTINFO m_select;
+	SELECTINFO m_select; 
+	std::map<int, std::string> m_mapNote; 
 // 实现
 protected:
 	HICON m_hIcon;
@@ -70,4 +74,5 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	
 	afx_msg void OnBnClickedSelect();
+	afx_msg void OnDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
 };

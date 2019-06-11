@@ -52,12 +52,15 @@ bool CImportStorage::UpCtrl()
 	CEdit* goodsId = (CEdit*)this->GetDlgItem(IDC_goodsId);
 	CEdit* goodsCount = (CEdit*)this->GetDlgItem(IDC_goodsCount);
 	CEdit* handleName = (CEdit*)this->GetDlgItem(IDC_handleName);
+	CEdit* note = (CEdit*)this->GetDlgItem(IDC_noteImport);
 	CString id;
 	goodsId->GetWindowText(id);
 	CString name;
 	handleName->GetWindowText(name);
 	CString count;
 	goodsCount->GetWindowText(count);
+	CString noteStr;
+	note->GetWindowText(noteStr);
 	if (id.IsEmpty() || name.IsEmpty() || count.IsEmpty())
 		return false;
 	std::string tempGoodsGuid = GoodsInfo::instance()->getGoodsGuids(Fly_string::w2c(id));
@@ -67,6 +70,7 @@ bool CImportStorage::UpCtrl()
 	info.handleName = Fly_string::w2c(name);
 	std::string countStr = Fly_string::w2c(count).c_str();
 	info.count = atoi(countStr.c_str());
+	info.note = Fly_string::w2c(noteStr);
 	if (info.count < 1 || info.count > 100000000)
 		return false;
 	return StorageAct::instance()->importGoodsToStrorage(info);  

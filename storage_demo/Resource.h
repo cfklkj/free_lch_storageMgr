@@ -15,8 +15,10 @@
 #define IDC_goodsCount                  1004
 #define IDC_handleName                  1005
 #define IDC_TAB1                        1006
+#define IDC_noteImoprt                  1006
+#define IDC_noteOutport                 1006
+#define IDC_noteImport                  1006
 #define IDC_LIST1                       1007
-#define IDC_EDIT1                       1008
 #define IDC_Where                       1008
 #define IDC_Select                      1009
 #define ID_ADD_32771                    32771

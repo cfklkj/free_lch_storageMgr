@@ -54,6 +54,7 @@ bool COutportStorage::UpCtrl()
 	CEdit* goodsCount = (CEdit*)this->GetDlgItem(IDC_goodsCount);
 	CEdit* handleName = (CEdit*)this->GetDlgItem(IDC_handleName);
 	CEdit* useName = (CEdit*)this->GetDlgItem(IDC_useName);
+	CEdit* note = (CEdit*)this->GetDlgItem(IDC_noteOutport);
 	CString id;
 	goodsId->GetWindowText(id);
 	CString name;
@@ -62,6 +63,8 @@ bool COutportStorage::UpCtrl()
 	useName->GetWindowText(uname);
 	CString count;
 	goodsCount->GetWindowText(count);
+	CString noteStr;
+	note->GetWindowText(noteStr);
 	if (id.IsEmpty() || name.IsEmpty() || count.IsEmpty() || uname.IsEmpty())
 		return false;
 	std::string tempGoodsGuid = GoodsInfo::instance()->getGoodsGuids(Fly_string::w2c(id));
@@ -72,6 +75,7 @@ bool COutportStorage::UpCtrl()
 	info.useName = Fly_string::w2c(uname);
 	std::string countStr = Fly_string::w2c(count).c_str();
 	info.count = atoi(countStr.c_str());
+	info.note = Fly_string::w2c(noteStr);
 	if (info.count < 1 || info.count > 100000000)
 		return false; 
 	StorageAct::instance()->outputGoodsFromStrorage(info);

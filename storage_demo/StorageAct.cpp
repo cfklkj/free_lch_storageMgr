@@ -45,6 +45,7 @@ std::vector<IMPORTINFO> StorageAct::getSelectImportGoodsToStrorageInfo(IMPORTINF
 	}
 	return rstInfo;
 }
+ 
 
 bool StorageAct::outputGoodsFromStrorage(OUTPORTINFO info)
 {
@@ -79,7 +80,7 @@ bool StorageAct::addToImportStrorageFile(IMPORTINFO info)
 	fopen_s(&stream, g_storageImportFilePath.c_str(), "a+");
 	if (stream)
 	{
-		fprintf(stream, "%s,%d,%s,%s\n", info.goodsGuid.c_str(), info.count, info.data.c_str(), info.handleName.c_str());
+		fprintf(stream, "%s,%d,%s,%s,%s\n", info.goodsGuid.c_str(), info.count, info.data.c_str(), info.handleName.c_str(), info.note.c_str());
 		fclose(stream);
 	}
 	return false;
@@ -94,7 +95,7 @@ bool StorageAct::addToOutportStrorageFile(OUTPORTINFO info)
 	fopen_s(&stream, g_storageOutportFilePath.c_str(), "a+");
 	if (stream)
 	{
-		fprintf(stream, "%s,%d,%s,%s,%s\n", info.goodsGuid.c_str(), info.count, info.data.c_str(), info.useName.c_str(), info.handleName.c_str());
+		fprintf(stream, "%s,%d,%s,%s,%s,%s\n", info.goodsGuid.c_str(), info.count, info.data.c_str(), info.useName.c_str(), info.handleName.c_str(), info.note.c_str());
 		fclose(stream);
 	}
 	return false;
@@ -115,7 +116,7 @@ void StorageAct::initVecImport()
 			info.count = atoi(Fly_string::GetSubStr(buff, ",", 2).c_str());
 			info.data = Fly_string::GetSubStr(buff, ",", 3);
 			info.handleName = Fly_string::GetSubStr(buff, ",", 4);
-			info.handleName = Fly_string::delChar(info.handleName.c_str(), "\r\n", 0);
+			info.note = Fly_string::GetSubStr(buff, ",", 5); 
 			GoodsInfo::instance()->upGoodsCount(info.goodsGuid, info.count);
 			m_vecImport.push_back(info);
 		}
@@ -140,7 +141,7 @@ void StorageAct::initVecOutport()
 			info.data = Fly_string::GetSubStr(buff, ",", 3);
 			info.useName = Fly_string::GetSubStr(buff, ",", 4);
 			info.handleName = Fly_string::GetSubStr(buff, ",", 5);
-			info.handleName = Fly_string::delChar(info.handleName.c_str(), "\r\n", 0);
+			info.note = Fly_string::GetSubStr(buff, ",", 6);
 			GoodsInfo::instance()->upGoodsCount(info.goodsGuid, -info.count);
 			m_vecOutport.push_back(info);
 		}
